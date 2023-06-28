@@ -31,6 +31,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.*;
+import java.util.concurrent.CountDownLatch;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -923,6 +924,20 @@ public class ConditionFactory {
      */
     public <V> V untilAtomic(final AtomicReference<V> atomic, final Matcher<? super V> matcher) {
         return until(new CallableHamcrestCondition<>(atomic::get, matcher, generateConditionSettings()));
+    }
+
+    /**
+     * Await until a {@link CountDownLatch} has a count matching the specified
+     * {@link org.hamcrest.Matcher}. E.g.
+     * <p>&nbsp;</p>
+     * <pre>
+     *     await().untilLatch(myLatch, is(equalTo(0L)));
+     * </pre>
+     * @param latch the countdown latch
+     * @param matcher the matcher The hamcrest matcher that checks whether the condition is fulfilled.
+     */
+    public void untilLatch(final CountDownLatch latch, final Matcher<? super Long> matcher) {
+        until(new CallableHamcrestCondition<>(latch::getCount, matcher, generateConditionSettings()));
     }
 
     /**
